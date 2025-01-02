@@ -27,6 +27,8 @@ public class VoitureController {
         return voitures;
     }
 
+
+
     @GetMapping("/{id}")
     public Voiture findById(@PathVariable Long id) {
         Voiture voiture = voitureRepository.findById(id)
