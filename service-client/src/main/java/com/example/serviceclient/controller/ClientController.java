@@ -1,5 +1,6 @@
 package com.example.serviceclient.controller;
 
+import com.example.serviceclient.client.ClientService;
 import com.example.serviceclient.model.Client;
 import com.example.serviceclient.repository.ClientRepository;
 import com.example.serviceclient.client.VoitureService;
@@ -22,6 +23,10 @@ public class ClientController {
 
     @Autowired
     private VoitureService voitureService;
+
+
+    @Autowired
+    private ClientService clientService;
 
     @Autowired
     private WebClient.Builder webClientBuilder;
@@ -82,6 +87,50 @@ public class ClientController {
                 .uri("http://service-voiture/voitures") // Use service name
                 .retrieve()
                 .bodyToMono(List.class)
+                .block();
+    }
+
+    @GetMapping("/feign")
+    public List<Client> getAllClientsFeign() {
+        return clientService.findAll(); // Use the injected instance
+    }
+
+    @GetMapping("/feign/{id}")
+    public Client getClientByIdFeign(@PathVariable Long id) {
+        return clientService.findById(id); // Use the injected instance
+    }
+
+    @GetMapping("/resttemplate")
+    public List<Client> getAllClientsRestTemplate() {
+        String url = "http://service-client/clients";
+        return restTemplate.getForObject(url, List.class);
+    }
+
+    // Get client by ID (RestTemplate)
+    @GetMapping("/resttemplate/{id}")
+    public Client getClientByIdRestTemplate(@PathVariable Long id) {
+        String url = "http://service-client/clients/" + id;
+        return restTemplate.getForObject(url, Client.class);
+    }
+
+    @GetMapping("/webclient")
+    public List<Client> getAllClientsWebClient() {
+        return webClientBuilder.build()
+                .get()
+                .uri("http://service-client/clients")
+                .retrieve()
+                .bodyToMono(List.class)
+                .block();
+    }
+
+    // Get client by ID (WebClient)
+    @GetMapping("/webclient/{id}")
+    public Client getClientByIdWebClient(@PathVariable Long id) {
+        return webClientBuilder.build()
+                .get()
+                .uri("http://service-client/clients/" + id)
+                .retrieve()
+                .bodyToMono(Client.class)
                 .block();
     }
 }

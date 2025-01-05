@@ -20,4 +20,7 @@ public class Voiture {
 
     @Transient
     private Client client;
+
+
+
 }
